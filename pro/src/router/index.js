@@ -19,21 +19,33 @@ const router = new VueRouter({
     mode: 'history',
     routes: [
         {
-            
-            path: '/', component: () => import('../views/layout.vue'), redirect: '/home',
-       
+
+            path: '/', name: 'layout', component: () => import('../views/layout.vue'),redirect: '/home',
+
             children: [
-                { path: '/home', name: 'home', component: () => import('../views/home.vue') },
-                { path: '/mall', name: 'mall', component: () => import('../views/mall.vue') },
-                { path: '/user', name: 'user', component: () => import('../views/user.vue') },
-                { path: '/page1', name: 'page1', component: () => import('../views/page1.vue') },
-                { path: '/page2', name: 'page2', component: () => import('../views/page2.vue') },
+                // { path: '/home', name: 'home', component: () => import('../views/home.vue') },
+                // { path: '/mall', name: 'mall', component: () => import('../views/mall.vue') },
+                // { path: '/user', name: 'user', component: () => import('../views/user.vue') },
+                // { path: '/page1', name: 'page1', component: () => import('../views/page1.vue') },
+                // { path: '/page2', name: 'page2', component: () => import('../views/page2.vue') },
 
             ],
-           
-            
+
+
         },
-        {path: '/login',name: 'login', component: () => import('../views/login.vue'),}
+        { path: '/login', name: 'login', component: () => import('../views/login.vue') },
+        // {
+        //     name: '404',
+        //     path: '/404',
+        //     component: () => import('../views/404.vue'),
+        // },
+        // {
+        //     path: '*',
+        //     redirect: {
+        //         name: "404"
+        //     }
+        // }
+
 
     ]
 })

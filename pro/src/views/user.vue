@@ -71,8 +71,10 @@
       </el-form>
     </div>
     <div></div>
-    <el-table :data="tabledata1" style="width: 100%" height="85%">
+    <el-table :data="tabledata1" style="width: 100%" height="85%"  stripe>
+       
       <el-table-column
+      sortable
         :prop="key"
         :label="val"
         v-for="(val, key) in tablelable"
@@ -103,10 +105,10 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="currentPage"
+        :current-page="curr"
         :page-sizes="[20, 50, 100, 200]"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="1000"
+        :total="count"
         background
       >
       </el-pagination>
@@ -149,8 +151,11 @@ export default {
         address: [{ required: true, message: "请输入地址", trigger: "blur" }],
       },
       tabledata1: [],
-      tablelable: {},
-      currentPage: 1, //分页
+      tablelable: {},// 表头
+
+      curr: 1, //分页
+      limit: 20,
+      count: 20,
       typemodel: "1", //1新增 2：编辑
       from2: {
         user: "",
@@ -232,23 +237,31 @@ export default {
           });
         });
     },
-    //分页跳转
+    //分页改变
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
+      this.limit = val;
+      this.getlist()
     },
-    //分页改变
+    //分页跳转
     handleCurrentChange(val) {
-      // console.log(`当前页: ${val}`);
+      console.log(`当前页: ${val}`);
+      this.curr = val;
+      this.getlist()
     },
     //查询
     onSubmit2() {
       console.log("submit!");
     },
     getlist() {
-      getuser().then((res) => {
+      getuser({ params:{limit:this.limit, curr:this.curr} }).then((res) => {
         const { tabledata, tablelable } = res.data.data;
-        this.tabledata1 = tabledata.data;
+        this.tabledata1 = tabledata.data; 
         this.tablelable = tablelable;
+        this.count = tabledata.count || 0;
+        
+        
+       
       });
     },
   },

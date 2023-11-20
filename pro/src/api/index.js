@@ -14,6 +14,10 @@ export const edituser = (data) => {
   return http.post('/user/edit', data)
 }
 export const getuser = (param) => {
+
   return http.get('/user/get', param)
 }
 
+export const getMenu = (param) => {
+  return http.post('/promission/getMenu', param)
+}

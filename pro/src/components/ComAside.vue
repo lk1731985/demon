@@ -25,11 +25,12 @@
 
 <script>
 // const menu = require('../assets/menu.js');
-import menu from '../assets/menu.js';
+// import menu from '../assets/menu.js';
+import Cookies from "js-cookie";
 export default {
     data() {
         return {
-            menu,
+           
         };
     },
     methods: {
@@ -58,6 +59,16 @@ export default {
         },
         isCollapse() {
             return this.$store.state.tab.isCollapse;
+        },
+        //从store中获取menu数据
+        menu() {
+            //判断如果cookie存在，从cookie中获取menu数据，否则从store中获取
+            if (Cookies.get('menu')) {
+                return JSON.parse(Cookies.get('menu'))
+            }else{
+                return this.$store.state.tab.menu
+            }
+            // return JSON.parse(Cookies.get('menu')) || this.$store.state.tab.menu
         }
     }
 }

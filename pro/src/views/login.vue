@@ -4,8 +4,8 @@
       <div class="left-box">
         <img src="../assets/55.jpg" alt="" />
       </div>
-     
-        <el-card class="logon-box">
+
+      <el-card class="logon-box">
         <el-form
           ref="form"
           :model="form"
@@ -29,8 +29,10 @@
               show-password
             ></el-input>
           </el-form-item>
-          <el-form-item class='content'> 
-            <el-button type="primary" @click="onSubmit" style="width: 100%;">登录</el-button>
+          <el-form-item class="content">
+            <el-button type="primary" @click="onSubmit" style="width: 100%"
+              >登录</el-button
+            >
           </el-form-item>
         </el-form>
       </el-card>
@@ -38,7 +40,9 @@
   </div>
 </template>
 <script>
-import { login } from "@/api/index";
+import Mock from "mockjs";
+import cookie from "js-cookie";
+import { getMenu } from "@/api";
 export default {
   data() {
     return {
@@ -71,15 +75,43 @@ export default {
   methods: {
     //登录
     onSubmit() {
-      if (this.form.username == "admin" && this.form.password == "123456") {
-        this.$router.push("/home");
-      } else {
-        this.$message({
-          message: "用户名或密码错误",
-          type: "error",
-        });
-      }
+      //校验通过
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          getMenu(this.form).then((res) => {
+            //账号密码正确
+            if (res.data.code === 200) {
+              // console.log(res);
+              //token存入cookie，用于不同页面的通信
+              let seconds = 60*60*2;
+              let expires = new Date(new Date() * 1 + seconds * 1000);//2小时失效
+              cookie.set("token", res.data.token,{ expires: expires });
+              // cookie.set("token", res.data.token);
+              //store存入menu
+              this.$store.commit("setMenu", res.data.menu);
+              // console.log(this.$store.state.menu)
+
+              //动态注册路由
+              this.$store.commit("addMenu", this.$router);
+
+              //跳转到首页
+              this.$router.push("/home");
+            } else {
+              this.$message({
+                message: res.data.msg,
+                type: "error",
+              });
+            }
+          });
+        }
+      });
+
+      //跳转到首页
+      // this.$router.push("/home");
     },
+  },
+  mounted() {
+    //获取菜单
   },
 };
 </script>
@@ -123,8 +155,8 @@ export default {
       justify-content: center;
       align-items: center;
       text-align: center;
-      /deep/.content{
-        margin:0px
+      /deep/.content {
+        margin: 0px;
       }
     }
   }
