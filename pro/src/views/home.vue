@@ -66,7 +66,6 @@
 <script>
 // import tableData from '@/assets/tableData';
 import { getHomeInfo } from "@/api/index";
-
 export default {
   data() {
     return {
@@ -201,6 +200,8 @@ export default {
       EChart.setOption(config);
       data;
     },
+
+
   },
   mounted() {
     getHomeInfo().then(({ data }) => {
@@ -220,7 +221,8 @@ export default {
       //饼图
       this.echart3(pieData.list);
     });
-  },
+   this.getIpAndAddressSohu()
+  }
 };
 </script>
 <style lang="less" scoped>

@@ -22,3 +22,7 @@ export const getuser = (param) => {
 export const getMenu = (param) => {
   return http.post('/promission/getMenu', param)
 }
+
+
+
+

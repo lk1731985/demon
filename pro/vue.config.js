@@ -12,7 +12,15 @@ module.exports = defineConfig({
       //   pathRewrite: {
       //     '^/api': '/api'
       //   }
-       }
+       },
+      //  '/apiSohu': {
+      //   target: 'http://pv.sohu.com/', // localhost=>target
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //   '^/apiSohu': '/'
+      //   }
+      // },
+    
     }
   },
 })

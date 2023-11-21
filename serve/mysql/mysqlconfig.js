@@ -16,7 +16,7 @@ const mysqlpool = mysqlq.createPool(
         // connectionLimit: 10,
         host: 'localhost',//对应服务器，如果是本地，则为localhost
         user: 'root',
-        password: '',
+        password: '123456',
         port: '3306',
         database: 'test_api'
     })

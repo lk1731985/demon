@@ -23,75 +23,67 @@ router.get('/api/user/addall', async (req, res) => {
 
 // 获取user 数据
 router.get('/api/user/get', async (req, res) => {
+  const param = [];
+  const curr = Number(req.query.curr)
+  const limit = Number(req.query.limit)
+  const name = (req.query.name + '').trim()
+  const sex = (req.query.sex + '').trim()
 
-  let sql = `select * from(
-    select *,ROW_NUMBER()over(order by update_time desc) as rn from userinfo
-    ) a  where 1=1`
-  const { tabledata } = fn.getuser().data
-  // console.log(tabledata)
-  // rn>(${curr}-1)*${limit} and rn<=${curr}*${limit}
-  const param = []
-  if (req.query.curr != null && req.query.limit != null) {
-    sql += ' and rn>(?-1)*?  ';
-    param.push(req.query.curr)
-    param.push(req.query.limit)
-  } else {
-    sql += ' ';
+  let sql = ''
+
+  if (name.length > 0) {
+    sql = ` 
+    select * from(
+      select *,ROW_NUMBER()over(order by update_time desc) as rn from userinfo where 1=1 and name like '%${name}%'
+      ) a  where 1=1 and rn>(${curr}-1)*${limit} and rn<=${curr}*${limit} `
+    param.push(name)
   }
-  if (req.query.curr != null && req.query.limit != null) {
-    sql += ' and rn<=?*?  ';
-    param.push(req.query.curr)
-    param.push(req.query.limit)
-  } else {
-    sql += ' ';
+  if (sex.length > 0) {
+    sql = ` 
+    select * from(
+      select *,ROW_NUMBER()over(order by update_time desc) as rn from userinfo where 1=1 and sex='${sex}'
+      ) a  where 1=1 and rn>(${curr}-1)*${limit} and rn<=${curr}*${limit} `
+    param.push(sex)
   }
-  if (req.query.name != null ) {
-    sql += ' and name like %?';
-    param.push(req.query.name)
+  if (name.length > 0 && sex.length > 0) {
+    sql = ` 
+    select * from(
+      select *,ROW_NUMBER()over(order by update_time desc) as rn from userinfo where 1=1 and name like '%${name}%' and sex='${sex}'
+      ) a  where 1=1 and rn>(${curr}-1)*${limit} and rn<=${curr}*${limit} `
+    param.push(name)
+    param.push(sex)
   }
-  if (req.query.sex != null ) {
-    sql += ' and sex=? ';
-    param.push(req.query.name)
-  } 
+  if (name.length == 0 && sex.length == 0) {
+    sql = ` 
+    select * from(
+      select *,ROW_NUMBER()over(order by update_time desc) as rn from userinfo where 1=1
+      ) a  where 1=1 and rn>(${curr}-1)*${limit} and rn<=${curr}*${limit} `
+  }
+  param.push(curr)
+  param.push(limit)
 
   let _countdata = await mysqlquery(sql, param);
- 
+
   for (let i = 0; i < _countdata.length; i++) {
     _countdata[i].order = i + 1
   }
 
-//
 
-  const param1 = []
-  let sql1 = `select count(1) a from(
+  //总数
+  const param1 = [];
+  let sql1 = `select count(1) as a from(
     select *,ROW_NUMBER()over(order by update_time desc) as rn from userinfo
-    ) a  where 1=1`
-  if (req.query.curr != null && req.query.limit != null) {
-    sql1 += ' and rn>(?-1)*?  ';
-    param.push(req.query.curr)
-    param.push(req.query.limit)
-  } else {
-    sql1 += ' ';
+    ) a  where 1=1 `
+  if (name.length > 0) {
+    sql1 += ` and name like '%${name}%'`;
+    param1.push(name)
   }
-  if (req.query.curr != null && req.query.limit != null) {
-    sql1 += ' and rn<=?*?  ';
-    param.push(req.query.curr)
-    param.push(req.query.limit)
-  } else {
-    sql1 += ' ';
+  if (sex.length > 0) {
+    sql1 += ` and sex='${sex}'`;
+    param1.push(sex)
   }
-  if (req.query.name != null ) {
-    sql1 += ' and name like %?';
-    param.push(req.query.name)
-  }
-  if (req.query.sex != null ) {
-    sql1 += ' and sex=? ';
-    param.push(req.query.name)
-  } 
 
-
-
-  let count = await mysqlquery(sql1, param1.map(Number));
+  let count = await mysqlquery(sql1, param1);
 
   res.send({
     code: 200,
@@ -115,17 +107,19 @@ router.get('/api/user/get', async (req, res) => {
 })
 
 router.get('/api/user/del', async (req, res) => {
-   let sql = '';
-  let msg=''
+  let sql = '';
+  let msg = ''
+  const id = String(req.query.id)
   if (req.query.id != null) {
-    sql+=' delete from userinfo where id=? ';
-    msg='删除成功'
-  } 
+    sql += ` delete from userinfo where id='${id}' `;
+    msg = '删除成功'
+  }
   else {
     sql += 'select 1';
-    msg='删除失败'
+    msg = '删除失败'
   }
-  await mysqlquery(sql, req.query.id);
+  console.log(sql)
+  await mysqlquery(sql, id);
 
   res.send({
     code: 200,
@@ -142,41 +136,41 @@ router.get('/api/user/eidt', async (req, res) => {
     sql += '  name=? ';
     msg = '更新成功'
     param.push(req.query.name)
-  } 
+  }
   if (req.query.age != null) {
     sql += ' ,age=? ';
     msg = '更新成功'
     param.push(req.query.age)
-  } 
+  }
   if (req.query.sex != null) {
     sql += ' ,sex=? ';
     msg = '更新成功'
     param.push(req.query.sex)
-  } 
+  }
   if (req.query.date != null) {
     sql += ' ,date=? ';
     msg = '更新成功'
-      
+
     param.push(req.query.date)
-  } 
+  }
   if (req.query.address != null) {
     sql += ' ,address=? ';
     msg = '更新成功'
-      
+
     param.push(req.query.address)
-  } 
+  }
   if (req.query.id != null) {
     sql += ' where id=? ';
     msg = '更新成功'
-      
+
     param.push(req.query.id)
   } else {
     sql += '';
     msg = '更新失败'
   }
 
-  
-  await mysqlquery(sql,param);
+
+  await mysqlquery(sql, param);
   res.send({
     code: 200,
     msg: msg
@@ -196,7 +190,7 @@ router.get('/api/user/add', async (req, res) => {
     param.push(req.query.age)
     param.push(req.query.address)
     param.push(req.query.sex)
-  } 
+  }
   // if (req.query.age!= null) {
   //   sql += '  (?,?,?,?,?,UUID(),round(RAND()*100000000),md5(rand()))';
   //   param.push(req.query.date)
@@ -231,9 +225,9 @@ router.get('/api/user/add', async (req, res) => {
   // }
 
 
-  await mysqlquery(sql,param);
+  await mysqlquery(sql, param);
 
-res.send('添加成功')
+  res.send('添加成功')
 
 })
 module.exports = router

@@ -13,6 +13,7 @@ Vue.prototype.$echarts = echarts
 
 import '@/api/mock'
 
+
 Vue.config.productionTip = false
 
 //按需引入

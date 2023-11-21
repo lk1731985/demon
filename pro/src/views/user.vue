@@ -60,7 +60,7 @@
           <el-input v-model="from2.name" placeholder="请输入姓名"></el-input>
         </el-form-item>
         <el-form-item label="性别">
-          <el-select v-model="from2.sex" placeholder="请选择性别">
+          <el-select v-model="from2.sex" placeholder="请选择性别" clearable >
             <el-option label="男" value="男"></el-option>
             <el-option label="女" value="女"></el-option>
           </el-select>
@@ -158,7 +158,7 @@ export default {
       count: 20,
       typemodel: "1", //1新增 2：编辑
       from2: {
-        user: "",
+        name: "",
         sex: "",
       },
     };
