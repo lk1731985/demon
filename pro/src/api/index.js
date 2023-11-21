@@ -5,19 +5,20 @@ export const getHomeInfo = () => {
 }
 
 export const adduser = (data) => {
-  return http.post('/user/add', data)
+  return http.get('/user/add', data)
 }
 export const deluser = (data) => {
-  return http.post('/user/del', data)
+  return http.get('/user/del', data)
 }
 export const edituser = (data) => {
-  return http.post('/user/edit', data)
+  return http.get('/user/eidt', data)
 }
 export const getuser = (param) => {
 
   return http.get('/user/get', param)
 }
 
+//菜单数据
 export const getMenu = (param) => {
   return http.post('/promission/getMenu', param)
 }

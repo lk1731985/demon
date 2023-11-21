@@ -7,6 +7,12 @@ const mysqlrouter_user =require("./mysql/mysqlrouter_user.js")
 
 const mockrouter = require("./mock/mockrouter.js")
 
+// var bodyParser  = require('body-parser');
+
+// 以解析表单提交数据为例 application/x-www-form-urlencoded
+// extended: false 值是false时解析值是“String”或“Array” 值是true的时候可以解析任意类型的数据
+// var urlencodeParser = bodyparser.urlencoded({ extended: false })
+
 /*为app添加中间件处理跨域请求*/
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -15,6 +21,7 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
+// app.use(bodyParser.urlencoded({extended:false}))    
 
 //路由
 app.use(mysqlrouter_home)

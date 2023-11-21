@@ -16,7 +16,7 @@ const mysqlpool = mysqlq.createPool(
         // connectionLimit: 10,
         host: 'localhost',//对应服务器，如果是本地，则为localhost
         user: 'root',
-        password: 'root',
+        password: '',
         port: '3306',
         database: 'test_api'
     })
@@ -27,6 +27,7 @@ const mysqlquery = (sql, value) => {
             conn.query(sql, value, (err, result) => {
                 if (err) { reject(err) }
                 else {
+                    console.log(sql)
                     resolve(result)
                 }
 

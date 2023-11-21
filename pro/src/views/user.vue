@@ -57,10 +57,10 @@
 
       <el-form :inline="true" :model="from2" class="demo-form-inline">
         <el-form-item label="姓名">
-          <el-input v-model="from2.user" placeholder="请输入姓名"></el-input>
+          <el-input v-model="from2.name" placeholder="请输入姓名"></el-input>
         </el-form-item>
         <el-form-item label="性别">
-          <el-select v-model="from2.region" placeholder="请选择性别">
+          <el-select v-model="from2.sex" placeholder="请选择性别">
             <el-option label="男" value="男"></el-option>
             <el-option label="女" value="女"></el-option>
           </el-select>
@@ -118,7 +118,7 @@
 
 <script>
 import userinfo from "@/assets/userinfo";
-import { getuser } from "@/api/index";
+import { getuser,adduser,deluser,edituser } from "@/api/index";
 export default {
   data() {
     return {
@@ -159,7 +159,7 @@ export default {
       typemodel: "1", //1新增 2：编辑
       from2: {
         user: "",
-        region: "",
+        sex: "",
       },
     };
   },
@@ -171,9 +171,9 @@ export default {
       //修改标题
       this.title = "新增用户";
       //重置校验提示
-      if (this.$refs.from1) {
-        this.$refs.from1.resetFields();
-      }
+      
+      this.from1={};
+      
       this.typemodel = 1;
     },
     //提交数据
@@ -184,8 +184,14 @@ export default {
         if (valid) {
           if (this.typemodel == 1) {
             console.log("新增");
+            adduser({params:this.form1}).then((res) => {
+              this.getlist();
+            });
           } else {
             console.log("修改");
+            edituser({params:this.form1}).then((res) => {
+              this.getlist();
+            });
           }
 
           //校验通过关闭弹窗
@@ -211,9 +217,11 @@ export default {
     //编辑按钮
     handleEdit(index, row) {
       this.dialogVisible = true;
+      
       //修改标题
       this.title = "修改用户";
       this.typemodel = 2;
+      this.form1=JSON.parse(JSON.stringify(row));
       console.log(index, row);
     },
     //删除按钮
@@ -225,6 +233,10 @@ export default {
         type: "warning",
       })
         .then(() => {
+          deluser({ params:{id: row.id }}).then((res) => {
+            
+            this.getlist();
+          });
           this.$message({
             type: "success",
             message: "删除成功!",
@@ -239,29 +251,27 @@ export default {
     },
     //分页改变
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      // console.log(`每页 ${val} 条`);
       this.limit = val;
       this.getlist()
     },
     //分页跳转
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      // console.log(`当前页: ${val}`);
       this.curr = val;
       this.getlist()
     },
     //查询
     onSubmit2() {
       console.log("submit!");
+      this.getlist();
     },
     getlist() {
-      getuser({ params:{limit:this.limit, curr:this.curr} }).then((res) => {
+      getuser({ params:{...{limit:this.limit,curr:this.curr},...this.from2 }}).then((res) => {
         const { tabledata, tablelable } = res.data.data;
         this.tabledata1 = tabledata.data; 
         this.tablelable = tablelable;
         this.count = tabledata.count || 0;
-        
-        
-       
       });
     },
   },

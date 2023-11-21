@@ -133,11 +133,14 @@ let getuser = () => {
                 "data|500": [
                     {
                         "id": "@guid()",
+                        "user_id|4": /[1-9][0-9]/,
                         "name": "@cname()",
-                        "age": "@integer(1, 100)",
+                        "age": "@integer(19, 60)",
                         'sex|1': ['男', '女'],
                         "date": "@date('yyyy-MM-dd')",
-                        "address": "@county(true)"
+                        "address": "@county(true)",
+                        'menu':[],
+                        "password": '@string(8)'
                     }
                 ]
             })
